@@ -145,4 +145,6 @@ module.exports = {
   '类型': 'Type',
   '端口': 'Port',
   '流量(MB)': 'Data Usage(MB)',
+
+  '接收消息推送': 'Receive push message',
 };
