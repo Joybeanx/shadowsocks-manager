@@ -139,27 +139,36 @@ if(config.plugins.webgui.gcmAPIKey && config.plugins.webgui.gcmSenderId) {
   app.delete('/api/push/client', push.deleteClient);
 }
 
-app.get('/favicon.png', (req, res) => {
-  let file = './libs/favicon.png';
-  let options = {
-    root: './plugins/webgui/'
-  };
-  const iconPath = config.plugins.webgui.icon;
-  if(iconPath) {
-    const ssmgrPath = path.resolve(os.homedir(), './.ssmgr/');
-    if (iconPath[0] === '/' || iconPath[0] === '.') {
-      options = {};
-      file = path.resolve(iconPath);
-    } else if (iconPath[0] === '~') {
-      file = '.' + iconPath.substr(1);
-      options.root = os.homedir();
-    } else {
-      file = iconPath;
-      options.root = ssmgrPath;
+const sendFile=(defaultFile,path,req, res) => {
+    let file = './libs/'+ defaultFile;
+    let options = {
+        root: './plugins/webgui/'
+    };
+    if(path) {
+        const ssmgrPath = path.resolve(os.homedir(), './.ssmgr/');
+        if (path[0] === '/' || path[0] === '.') {
+            options = {};
+            file = path.resolve(path);
+        } else if (path[0] === '~') {
+            file = '.' + path.substr(1);
+            options.root = os.homedir();
+        } else {
+            file = path;
+            options.root = ssmgrPath;
+        }
     }
-  }
-  res.sendFile(file, options);
+    res.sendFile(file, options);
+};
+
+app.get('/favicon.png', (req, res) => {
+    sendFile('favicon.png',config.plugins.webgui.icon, req, res);
 });
+
+
+app.get('/background.png', (req, res) => {
+    sendFile('background.png',config.plugins.webgui.background, req, res);
+});
+
 
 const manifest = appRequire('plugins/webgui/views/manifest').manifest;
 app.get('/manifest.json', (req, res) => {
@@ -187,6 +196,7 @@ const configForFrontend = {
 };
 
 const cdn = config.plugins.webgui.cdn;
+const appUrl = config.plugins.webgui.appUrl;
 const analytics = config.plugins.webgui.googleAnalytics || '';
 const colors = [
   { value: 'red', color: '#F44336' },
@@ -220,6 +230,7 @@ const homePage = (req, res) => {
     return success[0].value;
   }).then(success => {
     configForFrontend.title = success.title;
+    configForFrontend.description = success.description;
     configForFrontend.themePrimary = success.themePrimary;
     configForFrontend.themeAccent = success.themeAccent;
     const filterColor = colors.filter(f => f.value === success.themePrimary);
@@ -228,6 +239,7 @@ const homePage = (req, res) => {
       title: success.title,
       version,
       cdn,
+      appUrl,
       analytics,
       config: configForFrontend,
       paypal: !!(config.plugins.paypal && config.plugins.paypal.use),

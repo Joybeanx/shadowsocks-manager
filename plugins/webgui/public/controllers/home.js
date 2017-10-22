@@ -25,6 +25,10 @@ app
         icon: 'home',
         click: 'home.index'
       }, {
+          name: '客户端',
+          icon: 'get_app',
+          click: 'home.client'
+      }, {
         name: '登录',
         icon: 'cloud',
         click: 'home.login'
@@ -43,16 +47,16 @@ app
     ($scope, $state) => {
       $scope.icons = [{
         icon: 'flash_on',
-        title: '快速搭建',
-        content: '仅依赖Node.js，无需安装数据库（可选MySQL）',
+        title: '良好的速度体验',
+        content: '异步I/O和事件驱动，多种TCP优化技术',
       }, {
-        icon: 'build',
-        title: '易于配置',
-        content: '带有插件系统，仅需修改配置文件即可运行',
+        icon: 'phonelink',
+        title: '突破网络封锁',
+        content: '摆脱地域限制和网络审查，畅通无阻地访问任何网站',
       }, {
-        icon: 'vpn_key',
-        title: '官方标准',
-        content: '支持libev和python版本的标准manager API',
+        icon: 'security',
+        title: '保护在线隐私',
+        content: '所有流量经过加密，保证上网安全',
       }];
       $scope.login = () => { $state.go('home.login'); };
       $scope.signup = () => { $state.go('home.signup'); };

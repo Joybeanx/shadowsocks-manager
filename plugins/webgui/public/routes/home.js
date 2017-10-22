@@ -1,6 +1,7 @@
 const app = angular.module('app');
 const window = require('window');
 const cdn = window.cdn || '';
+const appUrl = window.appUrl || '/home';
 
 app.config(['$stateProvider', $stateProvider => {
   $stateProvider
@@ -33,7 +34,12 @@ app.config(['$stateProvider', $stateProvider => {
       url: '/password/reset/:token',
       controller: 'HomeResetPasswordController',
       templateUrl: `${ cdn }/public/views/home/resetPassword.html`,
-    });
+    })
+    .state('home.client', {
+      onEnter: function () {
+          window.open(`${ appUrl }`, '_blank');
+      }
+  });
   }
 ]);
 
