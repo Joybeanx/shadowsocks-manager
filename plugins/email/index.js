@@ -32,7 +32,7 @@ if(config.plugins.email.type === 'smtp') {
     baseUrl: config.plugins.email.baseUrl,
     apiKey: config.plugins.email.apiKey,
   };
-  config.plugins.email.email = 'mailgun@' + emailConfig.baseUrl.split('/').slice(-1);
+  config.plugins.email.email = 'no-reply@' + emailConfig.baseUrl.split('/').slice(-1);
   const uri = 'https://api:' + emailConfig.apiKey + '@' + emailConfig.baseUrl.split('https://')[1] + '/messages';
   transporter = {};
   transporter.sendMail = (options, cb) => {
