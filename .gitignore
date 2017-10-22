@@ -42,3 +42,7 @@ config/development.yml
 
 .vscode
 lib
+
+#idea
+.idea/
+*.iml
