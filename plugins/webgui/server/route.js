@@ -139,21 +139,21 @@ if(config.plugins.webgui.gcmAPIKey && config.plugins.webgui.gcmSenderId) {
   app.delete('/api/push/client', push.deleteClient);
 }
 
-const sendFile=(defaultFile,path,req, res) => {
+const sendFile=(defaultFile,configPath,req, res) => {
     let file = './libs/'+ defaultFile;
     let options = {
         root: './plugins/webgui/'
     };
-    if(path) {
+    if(configPath) {
         const ssmgrPath = path.resolve(os.homedir(), './.ssmgr/');
-        if (path[0] === '/' || path[0] === '.') {
+        if (configPath[0] === '/' || configPath[0] === '.') {
             options = {};
-            file = path.resolve(path);
-        } else if (path[0] === '~') {
-            file = '.' + path.substr(1);
+            file = configPath.resolve(configPath);
+        } else if (configPath[0] === '~') {
+            file = '.' + configPath.substr(1);
             options.root = os.homedir();
         } else {
-            file = path;
+            file = configPath;
             options.root = ssmgrPath;
         }
     }
