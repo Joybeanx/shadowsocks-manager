@@ -12,7 +12,7 @@
                     <div flex>
                         <form name="settingForm" layout="row" layout-wrap>
                             <md-input-container class="md-block" flex="45">
-                                <label>支付宝</label>
+                                <label>{{'支付宝'|translate}}</label>
                                 <input type="number" required name="alipay" ng-model="paymentData[t.id].alipay">
                             </md-input-container>
                             <div flex="10"></div>
@@ -21,11 +21,11 @@
                                 <input type="number" required name="paypal" ng-model="paymentData[t.id].paypal">
                             </md-input-container>
                             <md-input-container class="md-block"  flex="100">
-                                <label>流量（MB）</label>
+                                <label>{{'流量'|translate}}（MB）</label>
                                 <input type="number" required name="flow" ng-model="paymentData[t.id].flow">
                             </md-input-container>
                             <md-input-container class="md-block"  flex="100">
-                                <label>订单名称</label>
+                                <label>{{'订单名称'|translate}}</label>
                                 <input type="text" required name="flow" ng-model="paymentData[t.id].orderName">
                             </md-input-container>
                         </form>

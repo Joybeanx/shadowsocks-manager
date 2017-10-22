@@ -17,6 +17,13 @@
                         </md-list-item>
                         <md-divider></md-divider>
                         <md-list-item>
+                            <md-input-container class="md-block" style="margin-bottom: -15px; width: 100%;">
+                                <label translate>网站描述</label>
+                                <input type="text"  name="description" ng-model="baseData.description">
+                            </md-input-container>
+                        </md-list-item>
+                        <md-divider></md-divider>
+                        <md-list-item>
                             <div class="md-list-item-text" style="width: 100%;" layout="row" layout-align="space-between center">
                                 <div flex="75" translate>使用Service Worker缓存静态页面</div>
                                 <div flex layout="row" layout-align="end center"><md-switch ng-model="baseData.serviceWorker" ng-change="serviceWorkerUpdate()" aria-label="serviceWorker"></md-switch></div>
@@ -31,7 +38,7 @@
                         </md-list-item>
                         <md-divider ng-show="showBrowserPush"></md-divider>
                         <div style="margin: 15px;">
-                            <div style="margin-top: 10px; margin-bottom: 10px;">主题颜色</div>
+                            <div style="margin-top: 10px; margin-bottom: 10px;" translate>主题颜色</div>
                             <md-grid-list
                                 md-cols-xs="4" md-cols-sm="6" md-cols-gt-sm="12"
                                 md-row-height="1:1"
@@ -45,7 +52,7 @@
                         </div>
                         <md-divider></md-divider>
                         <div style="margin: 15px;">
-                            <div style="margin-top: 10px; margin-bottom: 10px;">主题第二颜色</div>
+                            <div style="margin-top: 10px; margin-bottom: 10px;" translate>主题第二颜色</div>
                             <md-grid-list
                                 md-cols-xs="4" md-cols-sm="6" md-cols-gt-sm="12"
                                 md-row-height="1:1"
