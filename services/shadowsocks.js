@@ -6,6 +6,8 @@ const client = dgram.createSocket('udp4');
 const version = appRequire('package').version;
 const exec = require('child_process').exec;
 
+const kcptun = appRequire('services/kcptun');
+
 let clientIp = [];
 
 const config = appRequire('services/config').all();
@@ -118,9 +120,12 @@ const startUp = async () => {
   if(config.runShadowsocks === 'python') {
     sendMessage(`remove: {"server_port": 65535}`);
   }
-  const accounts = await knex('account').select([ 'port', 'password' ]);
+  const accounts = await knex('account').select([ 'port', 'password','kcptunPort' ]);
   accounts.forEach(f => {
     sendMessage(`add: {"server_port": ${ f.port }, "password": "${ f.password }"}`);
+    if(f.kcptunPort){
+      kcptun.start(f.port,f.kcptunPort);
+    }
   });
 };
 
@@ -187,7 +192,7 @@ const checkPortRange = (port) => {
   return isInRange;
 };
 
-const addAccount = async (port, password) => {
+const addAccount = async (port, password,kcptunPort) => {
   try {
     if(!checkPortRange(port)) {
       return Promise.reject('error');
@@ -195,8 +200,10 @@ const addAccount = async (port, password) => {
     const insertAccount = await knex('account').insert({
       port,
       password,
+      kcptunPort,
     });
     await sendMessage(`add: {"server_port": ${ port }, "password": "${ password }"}`);
+    await kcptun.start(port,kcptunPort);
     return { port, password };
   } catch(err) {
     return Promise.reject('error');
@@ -215,6 +222,7 @@ const removeAccount = async (port) => {
       port,
     }).delete();
     await sendMessage(`remove: {"server_port": ${ port }}`);
+    await kcptun.stop(f.port);
     return { port };
   } catch(err) {
     return Promise.reject('error');
@@ -239,7 +247,7 @@ const changePassword = async (port, password) => {
 
 const listAccount = async () => {
   try {
-    const accounts = await knex('account').select([ 'port', 'password' ]);
+    const accounts = await knex('account').select([ 'port', 'password','kcptunPort' ]);
     return accounts;
   } catch(err) {
     return Promise.reject('error');

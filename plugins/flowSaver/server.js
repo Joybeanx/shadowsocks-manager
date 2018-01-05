@@ -11,6 +11,7 @@ const add = options => {
     port,
     password,
     method,
+    kcptunOption,
     scale,
     shift,
   });
@@ -26,7 +27,7 @@ const del = (id) => {
 };
 
 const edit = options => {
-  const { id, name, host, port, password, method, scale = 1, comment = '', shift = 0 } = options;
+  const { id, name, host, port, password, method, kcptunOption,scale = 1, comment = '', shift = 0 } = options;
   checkAccount.deleteCheckAccountTimeServer(id);
   return knex('server').where({ id }).update({
     name,
@@ -35,6 +36,7 @@ const edit = options => {
     port,
     password,
     method,
+    kcptunOption,
     scale,
     shift,
   });
@@ -48,6 +50,7 @@ const list = async (options = {}) => {
     'port',
     'password',
     'method',
+    'kcptunOption',
     'scale',
     'comment',
     'shift',

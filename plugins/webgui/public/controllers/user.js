@@ -144,6 +144,7 @@ app
             $scope.account[index].password = a.password;
             $scope.account[index].port = a.port;
             $scope.account[index].type = a.type;
+            $scope.account[index].kcptunPort = a.kcptunPort;
           });
         } else {
           $scope.account = success.account;

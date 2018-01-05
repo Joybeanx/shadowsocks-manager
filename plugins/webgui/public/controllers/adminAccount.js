@@ -375,6 +375,7 @@ app.controller('AdminAccountController', ['$scope', '$state', '$stateParams', '$
         type: +$scope.account.type,
         port: +$scope.account.port,
         password: $scope.account.password,
+        kcptunPort: options.kcptunPort,
         time: $scope.account.time,
         limit: +$scope.account.limit,
         flow: +$scope.account.flow * 1000 * 1000,
@@ -437,6 +438,7 @@ app.controller('AdminAccountController', ['$scope', '$state', '$stateParams', '$
       $scope.account.type = success.data.type;
       $scope.account.port = success.data.port;
       $scope.account.password = success.data.password;
+      $scope.account.kcptunPort = success.data.kcptunPort;
       $scope.account.autoRemove = success.data.autoRemove;
       if(success.data.type >= 2 && success.data.type <= 5) {
         $scope.account.time = success.data.data.create;
@@ -472,6 +474,7 @@ app.controller('AdminAccountController', ['$scope', '$state', '$stateParams', '$
         type: +$scope.account.type,
         port: +$scope.account.port,
         password: $scope.account.password,
+        kcptunPort: $scope.account.kcptunPort,
         time: $scope.account.time,
         limit: +$scope.account.limit,
         flow: +$scope.account.flow * 1000 * 1000,

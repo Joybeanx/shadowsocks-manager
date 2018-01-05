@@ -32,6 +32,10 @@
                         <div ng-message="required">密码不能为空</div>
                     </div>
                 </md-input-container>
+                <md-input-container class="md-block">
+                    <label>kcptun端口</label>
+                    <input type="text"  name="kcptunPort" ng-model="account.kcptunPort">
+                </md-input-container>
                 <md-input-container class="md-block" ng-if="+account.type >= 2 && +account.type <= 5">
                     <label translate>流量(MB)</label>
                     <input type="number" required name="flow" ng-model="account.flow">

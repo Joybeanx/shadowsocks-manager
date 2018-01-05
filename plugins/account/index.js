@@ -15,6 +15,7 @@ const addAccount = async (type, options) => {
       userId: options.user,
       port: options.port,
       password: options.password,
+      kcptunPort: options.kcptunPort,
       status: 0,
       autoRemove: 0,
     });
@@ -26,6 +27,7 @@ const addAccount = async (type, options) => {
       userId: options.user,
       port: options.port,
       password: options.password,
+      kcptunPort: options.kcptunPort,
       data: JSON.stringify({
         create: options.time || Date.now(),
         flow: options.flow || 1 * 1000 * 1000 * 1000,
@@ -62,6 +64,7 @@ const getAccount = async (options = {}) => {
     'account_plugin.server',
     'account_plugin.port',
     'account_plugin.password',
+    'account_plugin.kcptunPort',
     'account_plugin.data',
     'account_plugin.status',
     'account_plugin.autoRemove',
@@ -93,6 +96,7 @@ const editAccount = async (id, options) => {
   const update = {};
   update.type = options.type;
   update.userId = options.userId;
+  update.kcptunPort = options.kcptunPort;
   update.autoRemove = options.autoRemove;
   // update.server = options.server ? JSON.stringify(options.server) : null;
   if(options.hasOwnProperty('server')) {

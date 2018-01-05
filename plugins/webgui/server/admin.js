@@ -98,12 +98,13 @@ exports.addAccount = (req, res) => {
       const type = +req.body.type;
       const port = +req.body.port;
       const password = req.body.password;
+      const kcptunPort=req.body.kcptunPort;
       const time = req.body.time;
       const limit = +req.body.limit;
       const flow = +req.body.flow;
       const autoRemove = +req.body.autoRemove || 0;
       return account.addAccount(type, {
-        port, password, time, limit, flow, autoRemove,
+        port, password,kcptunPort, time, limit, flow, autoRemove,
       });
     }
     result.throw();
@@ -148,6 +149,7 @@ exports.changeAccountData = (req, res) => {
     type: req.body.type,
     port: +req.body.port,
     password: req.body.password,
+    kcptunPort: +req.body.kcptunPort,
     time: req.body.time,
     limit: +req.body.limit,
     flow: +req.body.flow,

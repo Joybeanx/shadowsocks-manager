@@ -10,6 +10,7 @@ const host = config.manager.address.split(':')[0];
 const port = +config.manager.address.split(':')[1];
 
 const shadowsocks = appRequire('services/shadowsocks');
+const kcptun = appRequire('services/kcptun');
 
 const net = require('net');
 
@@ -41,7 +42,8 @@ const receiveCommand = async (data, code) => {
     if(message.command === 'add') {
       const port = +message.port;
       const password = message.password;
-      return shadowsocks.addAccount(port, password);
+      const kcptunPort = +message.kcptunPort;
+      return shadowsocks.addAccount(port, password,kcptunPort);
     } else if (message.command === 'del') {
       const port = +message.port;
       return shadowsocks.removeAccount(port);
@@ -58,6 +60,10 @@ const receiveCommand = async (data, code) => {
       return shadowsocks.getVersion();
     } else if (message.command === 'ip') {
       return shadowsocks.getClientIp(message.port);
+    } else if (message.command === 'setKcptun') {
+        const port = +message.port;
+        const kcptunPort = +message.kcptunPort;
+        return kcptun.set(port,kcptunPort);
     } else {
       return Promise.reject();
     }

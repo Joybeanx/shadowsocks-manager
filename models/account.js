@@ -9,6 +9,7 @@ const createTable = async() => {
   return knex.schema.createTableIfNotExists(tableName, function(table) {
     table.integer('port').primary();
     table.string('password');
+    table.integer('kcptunPort');
   });
 };
 

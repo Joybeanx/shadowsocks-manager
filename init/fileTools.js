@@ -1,81 +1,25 @@
 const fs = require('fs');
-var tar = require('tar');
-const http = require('http')
-const path = require('path');
-const zlib = require('zlib');
+const request = require('request');
+const targz = require('tar.gz2');
 const log4js = require('log4js');
 const logger = log4js.getLogger('system');
 
-const mkdir = function mkdir(filePath) {
+const mkdirSync = function (dirPath) {
     try {
-        var dir = path.dirname(filePath);
-        if (fs.statSync(dir)) {
-            return true;
+        fs.mkdirSync(dirPath)
+    } catch (err) {
+        if (err.code !== 'EEXIST') {
+            logger.error(`Failed to make directory ${dirPath}`);
+            throw err;
         }
-        mkdir(dir);
-        fs.mkdirSync(dir);
-    } catch (err) {
-        logger.error(`Failed to create directory ${filePath}:${err}`);
-        throw err;
     }
 }
 
-const download = function (url, dest) {
-    const file = fs.createWriteStream(dest);
-    http.get(url, function (response) {
-        mkdir(dest);
-        response.pipe(file);
-        file.on('finish', function () {
-            file.close();
-        });
-    }).on('error', function (err) {
-        logger.error(`Failed to download ${url} to ${dest}:${err}`);
-        fs.unlink(dest);
-        throw err;
-    });
-};
-
-const unzip = function (source, dest) {
-    try {
-        const inp = fs.createReadStream(source);
-        const unzip = zlib.Unzip();
-        mkdir(dest);
-        const out = fs.createWriteStream(dest);
-        inp.pipe(unzip).pipe(out);
-    } catch (err) {
-        logger.error(`Failed to unzip ${source} to ${dest}:${err}`);
-        throw err;
-    }
-};
-
-const unzipFirst = function (source, dest, entryRegex) {
-    try {
-        const inp = fs.createReadStream(source);
-        const unzip = zlib.Unzip();
-        const parser = inp.pipe(unzip).pipe(tar.Parse());
-        let firstMatchEntryName = null;
-        parser.on('entry', function (entry) {
-                if (!entryRegex || (new RegExp(entryRegex)).test(entry.path)) {
-                    const isDir = 'Directory' === entry.type;
-                    const fullPath = path.join(dest, entry.path);
-                    const directory = isDir ? fullPath : path.dirname(fullPath);
-                    mkdir(directory);
-                    if (!isDir) {
-                        entry.pipe(fs.createWriteStream(fullPath));
-                        firstMatchEntryName = fullPath;
-                        parser.end();
-                    }
-                }
-            }
-        );
-        return firstMatchEntryName;
-    } catch (err) {
-        logger.error(`Failed to unzip first match entry of ${source} to ${dest}:${err}`);
-        throw err;
-    }
+const unzipFromUrl = function (url, dest, callback) {
+    const read = request.get(url);
+    const write = targz().createWriteStream(dest);
+    read.pipe(write).on('finish', () => callback());
 }
 
-exports.mkdir = mkdir;
-exports.download = download;
-exports.unzip = unzip;
-exports.unzipFirst = unzipFirst;
+exports.mkdirSync = mkdirSync;
+exports.unzipFromUrl = unzipFromUrl;

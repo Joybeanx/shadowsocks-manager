@@ -33,11 +33,15 @@
                     </div>
                 </md-input-container>
                 <md-input-container class="md-block">
-                    <label>密码</label>
-                    <input type="text" required name="password" ng-model="account.password" disabled>
-                    <div ng-messages="accountForm.password.$error">
-                        <div ng-message="required">密码不能为空</div>
-                    </div>
+                <label>密码</label>
+                <input type="text" required name="password" ng-model="account.password" disabled>
+                <div ng-messages="accountForm.password.$error">
+                    <div ng-message="required">密码不能为空</div>
+                </div>
+                </md-input-container>
+                <md-input-container class="md-block">
+                    <label>kcptun端口</label>
+                    <input type="text"  name="kcptunPort" ng-model="account.kcptunPort">
                 </md-input-container>
                 <md-input-container class="md-block" ng-if="+account.type >= 2 && +account.type <= 5">
                     <label>流量(MB)</label>
@@ -47,10 +51,12 @@
                     </div>
                 </md-input-container>
             </form>
-            <div ng-if="+account.type >= 2 && +account.type <= 5" style="width: 100%;" layout="row" layout-align="space-between center">
+            <div ng-if="+account.type >= 2 && +account.type <= 5" style="width: 100%;" layout="row"
+                 layout-align="space-between center">
                 <div flex="75">到期自动删除</div>
                 <div flex layout="row" layout-align="end center">
-                    <md-switch ng-model="account.autoRemove" aria-label="autoRemove" ng-true-value="1" ng-false-value="0">
+                    <md-switch ng-model="account.autoRemove" aria-label="autoRemove" ng-true-value="1"
+                               ng-false-value="0">
                     </md-switch>
                 </div>
             </div>
