@@ -3,7 +3,7 @@ const manager = appRequire('services/manager');
 const checkAccount = appRequire('plugins/account/checkAccount');
 
 const add = options => {
-  const { name, host, port, password, method, scale = 1, comment = '', shift = 0 } = options;
+  const { name, host, port, password, method, kcptunOption, scale = 1, comment = '', shift = 0 } = options;
   return knex('server').insert({
     name,
     comment,
