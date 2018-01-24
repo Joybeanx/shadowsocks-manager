@@ -16,6 +16,10 @@ const mkdirSync = function (dirPath) {
 }
 
 const unzipFromUrl = function (url, dest, callback) {
+    if(fs.existsSync(dest)){
+        callback();
+        return;
+    }
     const read = request.get(url);
     const write = targz().createWriteStream(dest);
     read.pipe(write).on('finish', () => callback());

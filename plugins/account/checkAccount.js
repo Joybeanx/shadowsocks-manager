@@ -195,11 +195,19 @@ const checkServer = async () => {
                 port.forEach(f => {
                     port.list[f.port] = true;
                 });
+                port.find
                 port.exist = number => {
                     return !!port.list[number + s.shift];
                 };
                 port.existKcptun = kcptunPort => {
                     return port.some(e => e.kcptunPort === kcptunPort);
+                };
+                port.queyKcptun = ssPort => {
+                    const match= port.find(e => e.port === ssPort);
+                    if(match){
+                        return match.kcptunPort;
+                    }
+                    return null;
                 };
 
                 const checkAccountStatus = async a => {
@@ -224,7 +232,7 @@ const checkServer = async () => {
                         if (a.kcptunPort) {
                             !port.existKcptun(a.kcptunPort) && setKcptun(a.port, a.kcptunPort);
                         } else {
-                            port.existKcptun(a.kcptunPort) && setKcptun(a.port)
+                            port.queyKcptun(a.port)!=a.kcptunPort && setKcptun(a.port);
                         }
                     }
                     if (a.type >= 2 && a.type <= 5) {

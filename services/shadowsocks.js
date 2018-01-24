@@ -123,9 +123,6 @@ const startUp = async () => {
   const accounts = await knex('account').select([ 'port', 'password','kcptunPort' ]);
   accounts.forEach(f => {
     sendMessage(`add: {"server_port": ${ f.port }, "password": "${ f.password }"}`);
-    if(f.kcptunPort){
-      kcptun.start(f.port,f.kcptunPort);
-    }
   });
 };
 
@@ -222,7 +219,7 @@ const removeAccount = async (port) => {
       port,
     }).delete();
     await sendMessage(`remove: {"server_port": ${ port }}`);
-    await kcptun.stop(f.port);
+    await kcptun.stop(port);
     return { port };
   } catch(err) {
     return Promise.reject('error');

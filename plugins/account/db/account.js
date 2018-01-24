@@ -13,6 +13,7 @@ const createTable = async() => {
     table.string('server');
     table.integer('port').unique();
     table.string('password');
+    table.integer('kcptunPort');
     table.string('data');
     table.integer('status');
     table.integer('autoRemove').defaultTo(0);

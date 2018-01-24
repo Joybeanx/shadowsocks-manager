@@ -71,6 +71,7 @@ exports.addServer = (req, res) => {
     const port = +req.body.port;
     const password = req.body.password;
     const method = req.body.method;
+    const kcptunOption = req.body.kcptunOption;
     const scale = req.body.scale;
     const shift = req.body.shift;
     // return serverManager.add(name, address, port, password, method, scale, comment, shift);
@@ -80,6 +81,7 @@ exports.addServer = (req, res) => {
       port,
       password,
       method,
+      kcptunOption,
       scale,
       comment,
       shift,
@@ -123,6 +125,7 @@ exports.editServer = (req, res) => {
     const port = +req.body.port;
     const password = req.body.password;
     const method = req.body.method;
+    const kcptunOption = req.body.kcptunOption;
     const scale = req.body.scale;
     const shift = req.body.shift;
     // return serverManager.edit(serverId, name, address, port, password, method, scale, comment, shift);
@@ -133,6 +136,7 @@ exports.editServer = (req, res) => {
       port,
       password,
       method,
+      kcptunOption,
       scale,
       comment,
       shift,

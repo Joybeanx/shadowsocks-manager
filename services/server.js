@@ -43,7 +43,7 @@ const receiveCommand = async (data, code) => {
       const port = +message.port;
       const password = message.password;
       const kcptunPort = +message.kcptunPort;
-      return shadowsocks.addAccount(port, password,kcptunPort);
+      return shadowsocks.addAccount(port, password, kcptunPort);
     } else if (message.command === 'del') {
       const port = +message.port;
       return shadowsocks.removeAccount(port);

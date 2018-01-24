@@ -4,18 +4,16 @@ const fs = require('fs');
 const exec = require('child_process').exec;
 const cron = appRequire('init/cron');
 
-const config = appRequire('services/config').get('kcptun');
-const downloadUrl = config.download;
-const mtu = config.mtu;
-const mode = config.mode;
-const dscp = config.dscp;
-const nocomp = config.nocomp = config.nocomp ? '--nocomp' : '';
-const kcptunDir = process.env['HOME'] + '/kcptun/';
+const config = appRequire('services/config');
+const downloadUrl = 'https://github.com/xtaci/kcptun/releases/download/v20171201/kcptun-linux-amd64-20171201.tar.gz';
+const kcptunOption = config.kcptunOption ? '--' + config.kcptunOption.replace('/;/g', ' --').replace('/=/g', ' ') : '--crypt none --mtu 1350 --nocomp --mode fast2 --dscp 46';
+const kcptunDir = 'kcptun/';
+const kcptunPath = process.cwd() + '/' + kcptunDir;
 const serverRegex = new RegExp('server');
 
 const knex = appRequire('init/knex').knex;
 const fileTools = appRequire('init/fileTools');
-let inited=false;
+let inited;
 
 let kcptunServer;
 
@@ -27,18 +25,27 @@ let kcptunServer;
  * @returns {*} kcptun port
  */
 const start = async (ssPort, kcptunPort) => {
-    try {
-        if (!ssPort || !kcptunPort) {
-            return;
-        }
-        const cmd = `${kcptunServer} -l ":${ kcptunPort } " -t "0.0.0.0:${ ssPort } " --crypt ${ crypt } --mtu ${ mtu } ${ nocomp } --mode ${ mode } --dscp ${ dscp }`;
-        await exec(cmd);
-        logger.info(`kcptun started up on port ${kcptunPort} for shadowsocks port ${ssPort}`);
-        return {ssPort, kcptunPort};
-    } catch (err) {
-        logger.error(`Failed to start up kcptun for shadowsocks port ${ssPort}:` + err);
-        return Promise.reject('error');
+    if (!ssPort || !kcptunPort) {
+        return;
     }
+    logger.info(`prepare to start kcptun port on ${kcptunPort} for shadowsocks port ${ssPort}`);
+    exist(kcptunPort).then(r => {
+        if (r) {
+            logger.info(`kcptun start ignored cause kcptun port ${kcptunPort} exists`);
+        } else {
+            const cmd = `./${kcptunDir}${kcptunServer} -l ":${ kcptunPort }" -t "0.0.0.0:${ ssPort }" ${ kcptunOption }`;
+            exec(cmd, (error, stdout, stderr) => {
+                if (error || stderr) {
+                    logger.error(`start error:${error}`);
+                    logger.error(`start stderr:${stderr}`);
+                    logger.error(`Failed to start kcptun on ${kcptunPort} for shadowsocks port ${ssPort}:${ stderr || error }`);
+                    return;
+                }
+                logger.info(`stdout: ${stdout}`);
+                logger.info(`kcptun started up on port ${kcptunPort} for shadowsocks port ${ssPort}`);
+            });
+        }
+    });
 };
 
 
@@ -48,19 +55,23 @@ const start = async (ssPort, kcptunPort) => {
  * @returns {*} kcptun port
  */
 const stop = async (ssPort) => {
-    try {
-        if (!ssPort) {
+    if (!ssPort) {
+        return;
+    }
+    logger.info(`prepare to stop kcptun ${ssPort}`);
+    const cmd = `ps -aux | grep ${kcptunServer} | grep ":${ ssPort } "| awk '{print $2}'| xargs -r kill -9`;
+    await exec(cmd, (error, stdout, stderr) => {
+        if (error || stderr) {
+            logger.error(`stop error:${error}`);
+            logger.error(`stop stderr:${stderr}`);
+            logger.error(`Failed to stop kcptun for shadowsocks port ${ssPort}:${ stderr || error}`);
             return;
         }
-        const cmd = `kill -9 \`ps aux|grep ${kcptunServer}|grep :${ ssPort }|awk '{print $2}'\``;
-        await exec(cmd);
+        logger.info(`stdout: ${stdout}`);
         logger.info(`kcptun stopped for shadowsocks port ${ssPort}`);
-        return {ssPort};
-    } catch (err) {
-        logger.error(`Failed to stop kcptun for shadowsocks port ${ssPort}:` + err);
-        return Promise.reject('error');
-    }
-};
+    });
+    return {ssPort};
+}
 
 
 /**
@@ -68,18 +79,18 @@ const stop = async (ssPort) => {
  */
 const init = async () => {
     const startAll = async () => {
-        kcptunServer = fs.readdirSync(kcptunDir).filter(f => serverRegex.test(f))[0];
+        kcptunServer = fs.readdirSync(kcptunPath).filter(f => serverRegex.test(f))[0];
         if (!kcptunServer) {
-            logger.error("kcptun server not found in " + kcptunDir);
+            logger.error("kcptun server not found in " + kcptunPath);
         }
-        logger.info(`kcptun ${kcptunServer} set up successfully`);
+        inited = true;
+        logger.info(`kcptun  ${kcptunPath}${kcptunServer} set up successfully`);
         const accounts = await knex('account').select(['port', 'kcptunPort']);
         accounts.forEach(f => {
             start(f.port, f.kcptunPort);
         });
-        inited=true;
     }
-    fileTools.unzipFromUrl(downloadUrl, kcptunDir,startAll);
+    fileTools.unzipFromUrl(downloadUrl, kcptunPath, startAll);
 };
 
 init();
@@ -89,69 +100,87 @@ cron.minute(() => {
 
 /**
  * List kcptun port opened on this server
- * @returns kcptun port
+ * @returns Promise
  */
-const list = async () => {
+const list = () => {
     const firstCharOfKcpServer = kcptunServer.charAt(0);
     const kcptunServerRegex = kcptunServer.replace(firstCharOfKcpServer, '[' + firstCharOfKcpServer + ']');
-    const cmd = `ps -ef|grep "${ kcptunServerRegex } "  |gawk --re-interva  'match($0,/-l :([[:digit:]]*?)/,a)  { print a[1] }'`;
-    const result = [];
-    await exec(cmd, function (err, stdout, stderr) {
-        if (err) {
-            logger.error(`Failed to list kcptun port:` + err);
-            throw   Promise.reject('error');
-        } else {
-            stdout.split('\n').filter(f => f).forEach(f => {
-                if (result.indexOf(f) < 0) {
-                    result.push(f);
-                }
-            });
-        }
+    const cmd = `ps -ef|grep "${ kcptunServerRegex }"  | gawk --re-interva  'match($0,/-l :([[:digit:]]*?)/,a)  { print a[1] }'`;
+    return new Promise((resolve, reject) => {
+        exec(cmd, function (err, stdout, stderr) {
+            if (err || stderr) {
+                reject(err || stderr);
+            } else {
+                const result = [];
+                stdout.split('\n').filter(f => f).forEach(f => {
+                    if (result.indexOf(f) < 0) {
+                        result.push(f);
+                    }
+                });
+                logger.info(`current alive kcptun ports:${result}`)
+                resolve(result);
+            }
+        });
     });
-    return result;
 };
 
 
 /**
- * Stop existing kcptun server for the shadowsocks port, and start a new  kcptun server on the specified port if the input kcptun port is not empty
- * @param ssPort
+ * whether the kcptun process that starts on the specified port exists
+ * @param port
  * @param kcptunPort
  * @returns {Promise.<*>}
  */
-const set = async (ssPort, kcptunPort) => {
-    try {
-        const updateAccount = await knex('account').where({ssPort}).update({
-            kcptunPort,
+const exist = kcptunPort => {
+    const cmd = `netstat -antu | grep ${ kcptunPort }|| true `;
+    return new Promise((resolve, reject) => {
+        exec(cmd, function (err, stdout, stderr) {
+            if (err || stderr) {
+                reject(err || stderr);
+            } else {
+                const result = stdout.split('\n').find(f => f);
+                logger.info(`whether kcptun port exists:${!!result}`)
+                resolve(result);
+            }
         });
-        if (updateAccount <= 0) {
-            return Promise.reject('error');
-        }
-        stop(ssPort);
-        if (kcptunPort) {
-            start(ssPort, kcptunPort);
-        }
-        logger.info(`set kcptun port to ${kcptunPort} for shadowsocks port ${ssPort}`);
-        return {ssPort, kcptunPort};
-    } catch (err) {
-        logger.error(`Failed to set kcptun for shadowsocks port ${ssPort}:` + err);
-        return Promise.reject('error');
+    });
+};
+
+/**
+ * Stop existing kcptun server for the shadowsocks port, and start a new  kcptun server on the specified port if the input kcptun port is not empty
+ * @param port
+ * @param kcptunPort
+ * @returns {Promise.<*>}
+ */
+const set = async (port, _kcptunPort) => {
+    if (!inited) {
+        return;
     }
+    const kcptunPort = _kcptunPort ? _kcptunPort : 0;
+    logger.info(`prepare to set kcptun port to ${kcptunPort} for shadowsocks port ${port}`);
+    const updateAccount = await knex('account').where({port}).update({
+        kcptunPort,
+    });
+    if (updateAccount <= 0) {
+        return Promise.reject(`Cannot find account by port ${port}`);
+    }
+    await stop(port);
+    if (kcptunPort) {
+        await start(port, kcptunPort);
+    }
+    return {port, kcptunPort};
 };
 
 
 const syncStatus = async () => {
-    if(!inited){
+    if (!inited) {
         return;
     }
     const accounts = await knex('account').select(['port', 'kcptunPort']);
-    const currentKcptunPorts = await list();
-    accounts.forEach(f => {
-        if (currentKcptunPorts.indexOf(f.kcptunPort) < 0) {
-            start(f.port, f.kcptunPort);
-        }
+    list().then(currKcptunPorts => {
+        accounts.filter(a => currKcptunPorts.indexOf(a.kcptunPort) < 0).forEach(a => start(a.port, a.kcptunPort));
     });
 };
-
 
 
 exports.start = start;

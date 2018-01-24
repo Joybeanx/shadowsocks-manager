@@ -18,6 +18,7 @@ program
   .option('-m, --manager [address]', 'manager address, sample: 0.0.0.0:6002')
   .option('-p, --password [password]', 'manager password, both server side and manager side must be equals')
   .option('-r, --run [type]', 'run shadowsocks from child_process, sample: libev / libev:aes-256-cfb / python / python:aes-256-cfb')
+  .option('-k, --kcptun [kcptun option]', 'kcptun option, sample: crypt=none;mtu=1350;nocomp;mode=fast2;dscp=46')
   .option('--debug', 'show debug message')
   .parse(process.argv);
 
@@ -53,3 +54,7 @@ log.setFileAppenders(logName);
 if(program.run) {
   config.set('runShadowsocks', program.run);
 }
+if(program.kcptun) {
+    config.set('kcptunOption', program.kcptun);
+}
+

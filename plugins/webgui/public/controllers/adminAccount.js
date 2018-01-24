@@ -375,7 +375,7 @@ app.controller('AdminAccountController', ['$scope', '$state', '$stateParams', '$
         type: +$scope.account.type,
         port: +$scope.account.port,
         password: $scope.account.password,
-        kcptunPort: options.kcptunPort,
+        kcptunPort: +$scope.account.kcptunPort,
         time: $scope.account.time,
         limit: +$scope.account.limit,
         flow: +$scope.account.flow * 1000 * 1000,

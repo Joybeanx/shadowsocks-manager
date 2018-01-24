@@ -48,7 +48,7 @@
                                         </div>
                                     </md-list-item>
                                     <md-divider></md-divider>
-                                    <md-list-item>
+                                    <md-list-item  ng-if="a.kcptunPort">
                                         <div flex layout="row" layout-align="space-between center">
                                             <div flex="40" >Kcptun：</div><div flex="60" style="text-align:right">{{'--remoteaddr '+server.host+':'+a.kcptunPort+'" '+server.kcptunOption}}</div>
                                         </div>
