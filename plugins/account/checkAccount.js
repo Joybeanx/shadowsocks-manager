@@ -232,7 +232,7 @@ const checkServer = async () => {
                         if (a.kcptunPort) {
                             !port.existKcptun(a.kcptunPort) && setKcptun(a.port, a.kcptunPort);
                         } else {
-                            port.queyKcptun(a.port)!=a.kcptunPort && setKcptun(a.port);
+                            port.queyKcptun(a.port) && setKcptun(a.port);
                         }
                     }
                     if (a.type >= 2 && a.type <= 5) {
