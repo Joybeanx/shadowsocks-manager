@@ -9,7 +9,7 @@ const config = appRequire('services/config').all();
 const downloadUrl = 'https://github.com/xtaci/kcptun/releases/download/v20171201/kcptun-linux-amd64-20171201.tar.gz';
 const kcptunOption = config.kcptunOption ? ('--' + config.kcptunOption.replace(/;/g, ' --').replace(/=/g, ' ')).split(/\s+/) : ['--crypt', 'none', '--mtu', '1350', '--nocomp', '--mode', 'fast2', '--dscp', 46];
 const kcptunDir = 'kcptun/';
-const kcptunPath = process.cwd() + '/' + kcptunDir;
+const kcptunPath = process.env['HOME'] + '/' + kcptunDir;
 const serverRegex = new RegExp('server');
 
 const knex = appRequire('init/knex').knex;
@@ -37,7 +37,9 @@ const start = async (ssPort, kcptunPort) => {
             var options = kcptunOption.slice();
             options.unshift('-l', `:${ kcptunPort }`, '-t', `0.0.0.0:${ ssPort }`);
             //use spawn instead of exec because the startup command never ends
-            let kcptun = spawn(`./${kcptunDir}${kcptunServer}`, options);
+            let kcptun = spawn(`./${kcptunServer}`, options, {
+                cwd: kcptunPath
+            });
             //kcptun log default goes to stderr
             kcptun.stderr.on('data', function (data) {
                 logger.info(`kcptun start info:\n${data}`);
@@ -107,6 +109,7 @@ const stop = (kcptunPort) => {
  * Install kcptun server and start a process for every account ever opened kcptun
  */
 const init = async () => {
+    logger.info(`init kcptun  ${kcptunPath}`);
     const startAll = async () => {
         kcptunServer = fs.readdirSync(kcptunPath).filter(f => serverRegex.test(f))[0];
         if (!kcptunServer) {
