@@ -15,9 +15,10 @@ For more details, you can see [the wiki page](https://github.com/shadowsocks/sha
 
 If you want to use the old version, please switch to [this branch](https://github.com/shadowsocks/shadowsocks-manager/tree/version1).
 
-## WebGUI Demo:
+## WebGUI:
+ 
+<img src="https://github.com/Joybeanx/shadowsocks-manager/blob/master/wikiImage/home.jpg" width="500">
 
-[https://wall.gyteng.com](https://wall.gyteng.com)
 
 ## Dependencies
 
@@ -172,12 +173,3 @@ Join the group if you have some problem: [https://t.me/ssmgr](https://t.me/ssmgr
 * [BandwagonHost](https://bandwagonhost.com/aff.php?aff=19999)
 
 * [dediserve](https://manage.dediserve.com/?affid=841)
-
-### Donate
-If you find this project helpful, please consider making a donation:  
-
-* Alipay  
-<img src="https://github.com/gyteng/gyteng.github.com/raw/master/media/pic/alipay.jpg" width="160">
-
-* WeChat Pay  
-<img src="https://github.com/gyteng/gyteng.github.com/raw/master/media/pic/wechat.png" width="160">
