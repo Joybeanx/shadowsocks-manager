@@ -17,7 +17,7 @@ If you want to use the old version, please switch to [this branch](https://githu
 
 ## WebGUI:
  
-<img src="https://github.com/Joybeanx/shadowsocks-manager/blob/master/wikiImage/home.jpg" width="700">
+<img src="https://github.com/Joybeanx/shadowsocks-manager/blob/master/wikiImage/home.jpg" width="800">
 
 
 ## Dependencies
