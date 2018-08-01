@@ -7,7 +7,7 @@ const cron = appRequire('init/cron');
 
 const config = appRequire('services/config').all();
 const downloadUrl = 'https://github.com/xtaci/kcptun/releases/download/v20171201/kcptun-linux-amd64-20171201.tar.gz';
-const kcptunOption = config.kcptunOption ? ('--' + config.kcptunOption.replace(/;/g, ' --').replace(/=/g, ' ')).split(/\s+/) : ['--crypt', 'none', '--mtu', '1350', '--nocomp', '--mode', 'fast2', '--dscp', 46];
+const kcptunOption = config.kcptunOption ? ('--' + config.kcptunOption.replace(/;/g, ' --').replace(/=/g, ' ')).split(/\s+/) : ['--crypt', 'none', '--mtu', '1350', '--nocomp', '--mode', 'fast3', '--dscp', 46];
 const kcptunDir = 'kcptun/';
 const kcptunPath = process.env['HOME'] + '/' + kcptunDir;
 const serverRegex = new RegExp('server');
